@@ -19,10 +19,6 @@
                 <li th:text="${book.category}" class="list-group-item"></li>
                 <li th:text="${book.id}" class="list-group-item" style="display:none;"></li>
             </ul>
-            <div class="card-body">
-                <a class="btn btn-success btn-sm" th:href="'/books/edit/'+${book.id}">Edit</a>
-                <a class="btn btn-danger btn-sm" th:href="'/books/delete/'+${book.id}">Delete</a>
-            </div>
             </div>
         </div>
 

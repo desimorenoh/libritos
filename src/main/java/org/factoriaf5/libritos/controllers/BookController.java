@@ -56,5 +56,12 @@ public class BookController {
         bookRepository.deleteById(id);
         return "redirect:/books";
     }
+    @GetMapping("/home")
+    String listBooksOnHome(Model model) {
+        List<Book> books = (List<Book>) bookRepository.findAll();
+        model.addAttribute("title", "Book list");
+        model.addAttribute("books", books);
+        return "books/front";
+    }
 
 }

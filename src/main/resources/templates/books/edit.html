@@ -3,7 +3,7 @@
 <head th:replace="fragments/head"> </head>
 <body>
 <header th:replace="fragments/header"></header>
-<section class="container">
+<section class="container mb-5">
     <h1 th:text="${title}"></h1>
     <form th:action="@{/books/new}" th:object="${book}" method="post">
         <div class="form-group">
@@ -27,7 +27,7 @@
             <input th:field="*{category}" type="text" class="col-md6 form-control form-control-sm" id="category"
                    placeholder="Enter category">
         </div>
-        <div class="card-footer ">
+        <div class="card-footer mb-5">
             <input type="submit" class="btn btn-primary btn-sm" value="Save"/>
         </div>
     </form>
