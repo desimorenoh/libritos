@@ -27,6 +27,25 @@
             <input th:field="*{category}" type="text" class="col-md6 form-control form-control-sm" id="category"
                    placeholder="Enter category">
         </div>
+
+        <out value="${message}"/>
+        <form method="post" action="greet" enctype="multipart/form-data" commandName="fileFormBean">
+            <table>
+                <tr>
+                    <td>Selecciona fichero: </td>
+                    <td><input type="file" name="fichero" /></td>
+                </tr>
+                <tr>
+
+                </tr>
+                <tr><td colspan="2" align="center">
+                    <input type="submit" value="Subir fichero"></td>
+                </tr>
+            </table>
+        </form>
+
+
+
         <div class="card-footer mb-5">
             <input type="submit" class="btn btn-primary btn-sm" value="Save"/>
         </div>
