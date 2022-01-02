@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head"> </head>
+<head th:replace="fragments/head"></head>
 <body>
 <header th:replace="fragments/header"></header>
 <section class="container mb-5">
@@ -24,26 +24,31 @@
         </div>
         <div class="form-group">
             <label class="col-md2" for="category">Category</label>
-            <input th:field="*{category}" type="text" class="col-md6 form-control form-control-sm" id="category"
-                   placeholder="Enter category">
+            <select th:field="*{category}" type="text" class="col-md6 form-control form-control-sm" id="category">
+                <option th:each="category: ${categories}"
+                        th:value="${category.name}"
+                        th:text="${category.name}"
+                >
+                </option>
+            </select>
         </div>
 
         <out value="${message}"/>
         <form method="post" action="greet" enctype="multipart/form-data" commandName="fileFormBean">
             <table>
                 <tr>
-                    <td>Selecciona fichero: </td>
-                    <td><input type="file" name="fichero" /></td>
+                    <td>Selecciona fichero:</td>
+                    <td><input type="file" name="fichero"/></td>
                 </tr>
                 <tr>
 
                 </tr>
-                <tr><td colspan="2" align="center">
-                    <input type="submit" value="Subir fichero"></td>
+                <tr>
+                    <td colspan="2" align="center">
+                        <input type="submit" value="Subir fichero"></td>
                 </tr>
             </table>
         </form>
-
 
 
         <div class="card-footer mb-5">

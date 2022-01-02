@@ -15,7 +15,7 @@
 <div th:if="${param.logout}">
     You have been logged out.
 </div>
-<form th:action="@{/login}" method="post">
+<form th:action="@{/login}" sec:authorize="isAnonymous()" method="post">
 
     <div class="mb-3">
         <label for="username" class="form-label">Username:</label>
@@ -30,7 +30,7 @@
     <div><input class="btn btn-success" type="submit" value="Sign In"/></div>
 </form>
 
-<form th:action="@{/logout}" method="post">
+<form th:action="@{/logout}" sec:authorize="isAuthenticated()" method="post">
     <input class="btn btn-warning" type="submit" value="Sign Out"/>
 
 </form>

@@ -2,6 +2,7 @@ package org.factoriaf5.libritos;
 
 import org.factoriaf5.libritos.repositories.Book;
 import org.factoriaf5.libritos.repositories.BookRepository;
+import org.factoriaf5.libritos.repositories.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,14 @@ class ApplicationTests {
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books/all"))
-                .andExpect(model().attribute("books", hasItem(book)));
+                .andExpect(model().attribute("books", hasItem(book)))
+                .andExpect(model().attribute("categories", hasItems(
+                hasProperty("name", is("Essay")),
+                hasProperty("name", is("Fantasy")),
+                hasProperty("name", is("Software"))
+        )));
     }
+
     @BeforeEach
     void setUp() {
         bookRepository.deleteAll();
@@ -61,7 +68,12 @@ class ApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("books/edit"))
                 .andExpect(model().attributeExists("book"))
-                .andExpect(model().attribute("title", "Create new book"));
+                .andExpect(model().attribute("title", "Create new book"))
+                .andExpect(model().attribute("categories", hasItems(
+                        hasProperty("name", is("Essay")),
+                        hasProperty("name", is("Fantasy")),
+                        hasProperty("name", is("Software"))
+                )));
     }
 
     @Test
@@ -91,8 +103,14 @@ class ApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("books/edit"))
                 .andExpect(model().attribute("book", book))
-                .andExpect(model().attribute("title", "Edit book"));
+                .andExpect(model().attribute("title", "Edit book"))
+                .andExpect(model().attribute("categories", hasItems(
+                hasProperty("name", is("Essay")),
+                hasProperty("name", is("Fantasy")),
+                hasProperty("name", is("Software"))
+        )));
     }
+
     @Test
     @WithMockUser
     void allowsToDeleteABook() throws Exception {
@@ -102,5 +120,61 @@ class ApplicationTests {
                 .andExpect(redirectedUrl("/books"));
 
         assertThat(bookRepository.findById(book.getId()), equalTo(Optional.empty()));
+    }
+    //Ejemplo de test que comprueba que los usuarios no autorizados no pueden crear nuevos libros (sin WithMockUser)
+    //se debe repetir con cada uno que sea necesario yque redirija a "http://localhost/login")
+    @Test
+    void anonymousUsersCannotCreateABook() throws Exception {
+        mockMvc.perform(post("/books/new")
+                        .param("title", "Harry Potter and the Philosopher's Stone")
+                        .param("author", "J.K. Rowling")
+                        .param("category", "fantasy")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/login"));
+    }
+    @Test
+    @WithMockUser
+    void allowsToSearchBooksByTitle() throws Exception {
+
+        Book bookWithWord = bookRepository.save(new Book("Harry Potter and the Philosopher's Stone", "https://www.gog.com/games?page=1&sort=popularity", "J.K. Rowling", "fantasy"));
+        Book bookWithoutWord = bookRepository.save(new Book("Lean Software Development", "https://images-na.ssl-images-amazon.com/images/I/51JBRvhI1GL.jpg", "Mary Poppendieck", "Software"));
+
+        mockMvc.perform(get("/books/search?word=Harry"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("books/front"))
+                .andExpect(model().attribute("title", equalTo("Books containing \"Harry\"")))
+                .andExpect(model().attribute("books", hasItem(bookWithWord)))
+                .andExpect(model().attribute("books", not(hasItem(bookWithoutWord))))
+                .andExpect(model().attribute("categories", hasItems(
+                        hasProperty("name", is("Essay")),
+                        hasProperty("name", is("Fantasy")),
+                        hasProperty("name", is("Software"))
+                )));
+    }
+
+    @Test
+    void providesTheValidCategories() {
+        CategoryRepository categoryRepository = new CategoryRepository();
+
+        assertThat(categoryRepository.findAll(), hasItems(
+                hasProperty("name", is("Essay")),
+                hasProperty("name", is("Fantasy")),
+                hasProperty("name", is("Software"))
+        ));
+    }
+
+    @Test
+    @WithMockUser
+    void returnsBooksFromAGivenCategory() throws Exception {
+
+        Book fantasyBook = bookRepository.save(new Book("Harry Potter and the Philosopher's Stone", "https://www.gog.com/games?page=1&sort=popularity", "J.K. Rowling", "fantasy"));
+        Book softwareBook = bookRepository.save(new Book("Lean Software Development", "https://images-na.ssl-images-amazon.com/images/I/51JBRvhI1GL.jpg", "Mary Poppendieck", "Software"));
+
+        mockMvc.perform(get("/books?category=fantasy"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("books/all"))
+                .andExpect(model().attribute("books", hasItem(fantasyBook)))
+                .andExpect(model().attribute("books", not(hasItem(softwareBook))));
     }
 }

@@ -16,8 +16,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                //Dentro de la función antMatchers se incluyen las direcciones de nuestra página que no necesitan login
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/img/**").permitAll()
+                .antMatchers("/", "/home", "/img/**", "/css/**", "/login", "/books/search").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().defaultSuccessUrl("/", true)
